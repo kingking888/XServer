@@ -2,6 +2,9 @@ package monkeylord.XServer.api;
 
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
@@ -12,13 +15,17 @@ import monkeylord.XServer.XServer;
 import monkeylord.XServer.handler.MemoryHandler;
 import monkeylord.XServer.handler.MethodHandler;
 
-public class MemoryView implements XServer.Operation {
+public class MemoryView extends BaseOperation {
     @Override
     public String handle(String url, Map<String, String> parms, Map<String, String> headers, Map<String, String> files) {
         try {
             Method method=null;
             if(parms.get("op")!=null) {
                 switch (parms.get("op")){
+                    case "maps":
+                        JSONObject res = new JSONObject();
+                        res.put("maps",MemoryHandler.getMaps());
+                        return res.toJSONString();
                     case "dump":
                         byte[] binary=MemoryHandler.readMemory(Long.parseLong(parms.get("addr")),Integer.parseInt(parms.get("count")));
                         FileOutputStream fo = new FileOutputStream(new File("/sdcard/XServer.dump"));
